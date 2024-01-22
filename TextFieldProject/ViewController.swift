@@ -29,7 +29,8 @@ class ViewController: UIViewController, UITextFieldDelegate { // 대리자 사�
         textField.borderStyle = .roundedRect
         textField.clearButtonMode = .always // 텍스트를 입력했을 때, 필드의 우측에 입력 내용을 지울 수 있는 버튼?이 생김
         textField.returnKeyType = .go // google(search), next 등 엔터키 속성 변경
-        
+     
+        textField.becomeFirstResponder() // 텍스트필드가 먼저 포커스가 되도록 설정
     }
     
     
@@ -43,11 +44,6 @@ class ViewController: UIViewController, UITextFieldDelegate { // 대리자 사�
     func textFieldDidBeginEditing(_ textField: UITextField) {
         print("start writing")
     }
-    // 텍스트필드 글자 내용이 (한글자 한글자) 지워질때 호출 (허락)
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print(string)
-        return true
-    }
     
     // 실사용 예시
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -58,11 +54,35 @@ class ViewController: UIViewController, UITextFieldDelegate { // 대리자 사�
             return true
         }
     }
-    
-    
+    // 텍스트필드 글자 내용이 (한글자 한글자) 입력되거나 지워질 때 호출 (허락)
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        // 글자 수 10개 제한
+        // my ver
+//        guard let inputText = textField.text else {
+//            return false
+//        }
+//
+//        if inputText.count < 10 {
+//            return true
+//        }else{
+//            print("over 10 char")
+//            return false
+//        }
+        // 문제: 10자 이상 입력은 막았지만, 지워지지 않음
+        
+        // googling ver
+        let maxLength = 10
+        let currentString: NSString = (textField.text ?? "") as NSString
+        let newString: NSString =
+            currentString.replacingCharacters(in: range, with: string) as NSString
+        return newString.length <= maxLength
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////// event
     @IBAction func doneBtnTapped(_ sender: UIButton) {
+        textField.resignFirstResponder() // textField.becomeFirstResponder()와 반대 -> 키보드가 내려감
     }
 }
 
